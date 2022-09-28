@@ -10,9 +10,13 @@ def say_digit_or_operation(value):
 def say_answer(ans):
     say_digit_or_operation('equal')
     for num in str(ans):
-        if num.isdigit:
-            time.sleep(0.8)
+        time.sleep(0.8)
+        if num.isdigit():
             say_digit_or_operation(num)
+        elif num == '-':
+            say_digit_or_operation('negative')
+        elif num == '.':
+            say_digit_or_operation('point')
 
 
 def calculate(value1: str, value2: str, op: str) -> (int, float):
@@ -88,14 +92,14 @@ def main():
                         input_value = digit_key_decoder(event.key)
                         if input_value:
                             num1 += input_value
-                            print(input_value, end=' ')
+                            print(input_value, end='')
                             say_digit_or_operation(input_value)
 
                     elif event.key in num_operators.keys() and event.key != pygame.K_EQUALS:
                         buf = num1
                         num1 = ''
                         operator = num_operators[event.key]
-                        print(operator[1], end=' ')
+                        print(operator[1], end='')
                         say_digit_or_operation(operator[0])
 
                     elif event.key == pygame.K_EQUALS:

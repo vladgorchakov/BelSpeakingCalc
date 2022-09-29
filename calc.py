@@ -3,6 +3,21 @@ import pygame
 from decimal import Decimal
 
 
+def drow_text(text, f, sc):
+    RED = (255, 0, 0)
+    YELLOW = (239, 228, 176)
+    WHITE = (255, 255, 255)
+
+    W = 600
+    H = 400
+
+    sc_text = f.render(text, 1, RED, YELLOW)
+    pos = sc_text.get_rect(center=(W // 2, 80))
+
+    sc.fill(WHITE)
+    sc.blit(sc_text, pos)
+    pygame.display.update()
+
 def say_digit_or_operation(value):
     sound = pygame.mixer.Sound(f'{value}.wav')
     sound.play()
@@ -76,8 +91,12 @@ def main():
     pygame.display.set_caption('My calculator')
 
     WHITE = (255, 255, 255)
-    sc.fill(WHITE)
-    pygame.display.update()
+    RED = (255, 0, 0)
+    YELLOW = (239, 228, 176)
+
+    f_sys = pygame.font.SysFont('arial', 72)
+    f = pygame.font.Font('cabana.ttf', 72)
+    drow_text(text='He', f=f, sc = sc)
 
     FPS = 60
     clock = pygame.time.Clock()
@@ -105,7 +124,7 @@ def main():
         pygame.K_KP9: '9'
     }
 
-    while 1:
+    while True:
         for event in pygame.event.get():
             match event.type:
                 case pygame.QUIT:
@@ -114,6 +133,7 @@ def main():
                     if event.key in num_pad_digits.keys():
                         num1 += num_pad_digits[event.key]
                         print(num_pad_digits[event.key], end='')
+                        drow_text(text=num1, f=f, sc=sc)
                         say_digit_or_operation(num_pad_digits[event.key])
 
                     elif event.key in ariphemitic_operators.keys():

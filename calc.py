@@ -96,7 +96,7 @@ def main():
 
     f_sys = pygame.font.SysFont('arial', 72)
     f = pygame.font.Font('cabana.ttf', 72)
-    drow_text(text='He', f=f, sc = sc)
+    drow_text(text='He', f=f_sys, sc = sc)
 
     FPS = 60
     clock = pygame.time.Clock()
@@ -133,7 +133,7 @@ def main():
                     if event.key in num_pad_digits.keys():
                         num1 += num_pad_digits[event.key]
                         print(num_pad_digits[event.key], end='')
-                        drow_text(text=num1, f=f, sc=sc)
+                        drow_text(text=num1, f=f_sys, sc=sc)
                         say_digit_or_operation(num_pad_digits[event.key])
 
                     elif event.key in ariphemitic_operators.keys():

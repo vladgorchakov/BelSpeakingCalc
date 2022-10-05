@@ -90,13 +90,10 @@ def main():
     sc = pygame.display.set_mode((W, H))
     pygame.display.set_caption('My calculator')
 
-    WHITE = (255, 255, 255)
-    RED = (255, 0, 0)
-    YELLOW = (239, 228, 176)
-
     f_sys = pygame.font.SysFont('arial', 72)
     f = pygame.font.Font('cabana.ttf', 72)
     drow_text(text='He', f=f_sys, sc = sc)
+
 
     FPS = 60
     clock = pygame.time.Clock()

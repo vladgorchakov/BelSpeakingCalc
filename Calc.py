@@ -150,8 +150,9 @@ class Calculator(Window):
         num1 = ''
         buf = ''
         op = self.op1
-
         clear = False
+        answer = ''
+
         while True:
             for event in pygame.event.get():
                 match event.type:
@@ -160,7 +161,7 @@ class Calculator(Window):
 
                     case pygame.KEYDOWN:
                         if event.key in self.num_pad_digits.keys():
-                            if clear:
+                            if clear and answer:
                                 self.clear_fields()
                                 clear = False
 
@@ -173,11 +174,18 @@ class Calculator(Window):
                             if num1:
                                 buf = num1
                                 num1 = ''
-                                operator = self.ariphemitic_operators[event.key]
-                                print(operator[1], end='')
-                                self.operation.write(operator[1])
-                                self.say_digit_or_operation(operator[0])
-                                op = self.op2
+
+                            elif not num1 and answer:
+                                self.clear_fields()
+                                self.op1.write(str(answer))
+                                buf = answer
+                                answer = ''
+
+                            operator = self.ariphemitic_operators[event.key]
+                            print(operator[1], end='')
+                            self.operation.write(operator[1])
+                            self.say_digit_or_operation(operator[0])
+                            op = self.op2
 
                         elif event.key in (pygame.K_PERIOD, pygame.K_KP_PERIOD):
                             if num1.count('.') < 1:
@@ -192,8 +200,8 @@ class Calculator(Window):
                                 op.write(num1)
 
                         elif event.key == pygame.K_KP_ENTER:
-                            if num1:
-                                answer = self.calculate(num1, buf, operator[1])
+                            if num1 and buf:
+                                answer = str(self.calculate(num1, buf, operator[1]))
                                 print(f' = {answer}')
                                 self.answer.write(f'={answer}')
                                 self.say_answer(answer)

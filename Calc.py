@@ -210,6 +210,8 @@ class Calculator(Window):
                                 op = self.op1
                                 clear = True
 
+                            ### ДОПИСАТЬ ОКРУГЛЕНИЕ И УДАЛЕНИЕ ЛИШНИХ НУЛЕЙ ЕСЛИ ТИП инт
+
             self.clock.tick(self.fps)
 
 

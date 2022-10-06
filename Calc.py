@@ -30,6 +30,7 @@ class OperandWindow(Window):
         self.position = position
 
     def write(self, text, font_color=Colors.PINK.value):
+        self.clear()
         font_surface = self.font.render(text, 1, font_color, self.window_color)
         font_pos = font_surface.get_rect(center=(self.w // 2, self.h // 2))
         self.surface.blit(font_surface, font_pos)
@@ -141,10 +142,6 @@ class Calculator(Window):
         pygame.display.update()
 
     def clear_fields(self):
-        self.op1.clear()
-        self.op2.clear()
-        self.operation.clear()
-        self.answer.clear()
         self.window.fill(self.window_color)
 
     def run(self):
@@ -161,7 +158,6 @@ class Calculator(Window):
                     case pygame.QUIT:
                         exit()
 
-                    # РЕАЛИЗОВАТЬ УДАЛЕНИЕ ЦИФР
                     case pygame.KEYDOWN:
                         if event.key in self.num_pad_digits.keys():
                             if clear:
@@ -174,37 +170,37 @@ class Calculator(Window):
                             self.say_digit_or_operation(self.num_pad_digits[event.key])
 
                         elif event.key in self.ariphemitic_operators.keys():
-                            buf = num1
-                            num1 = ''
-                            operator = self.ariphemitic_operators[event.key]
-                            print(operator[1], end='')
-                            self.operation.write(operator[1])
-                            self.say_digit_or_operation(operator[0])
-                            op = self.op2
+                            if num1:
+                                buf = num1
+                                num1 = ''
+                                operator = self.ariphemitic_operators[event.key]
+                                print(operator[1], end='')
+                                self.operation.write(operator[1])
+                                self.say_digit_or_operation(operator[0])
+                                op = self.op2
 
                         elif event.key in (pygame.K_PERIOD, pygame.K_KP_PERIOD):
-                            num1 += '.'
-                            print('.', end='')
-                            op.write(num1)
-                            self.say_digit_or_operation('point')
+                            if num1.count('.') < 1:
+                                num1 += '.'
+                                print('.', end='')
+                                op.write(num1)
+                                self.say_digit_or_operation('point')
 
                         elif event.key == pygame.K_BACKSPACE:
                             if num1:
                                 num1 = num1[:-1]
-                                op.clear()
                                 op.write(num1)
-                                print()
-                                print(num1, end='')
 
                         elif event.key == pygame.K_KP_ENTER:
-                            answer = self.calculate(num1, buf, operator[1])
-                            print(f' = {answer}')
-                            self.answer.write(f'={answer}')
-                            self.say_answer(answer)
-                            num1 = ''
-                            buf = ''
-                            op = self.op1
-                            clear = True
+                            if num1:
+                                answer = self.calculate(num1, buf, operator[1])
+                                print(f' = {answer}')
+                                self.answer.write(f'={answer}')
+                                self.say_answer(answer)
+                                num1 = ''
+                                buf = ''
+                                op = self.op1
+                                clear = True
 
             self.clock.tick(self.fps)
 

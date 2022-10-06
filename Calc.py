@@ -9,7 +9,8 @@ class Colors(Enum):
     RED = (255, 0, 0),
     GREEN = (0, 255, 0),
     BLUE = (0, 0, 255),
-    BLACK = (0, 0, 0)
+    BLACK = (0, 0, 0),
+    PINK = (200, 25, 100)
 
 
 class Window:
@@ -28,7 +29,7 @@ class OperandWindow(Window):
         self.sc = sc
         self.position = position
 
-    def write(self, text, font_color=Colors.WHITE.value):
+    def write(self, text, font_color=Colors.PINK.value):
         font_surface = self.font.render(text, 1, font_color, self.window_color)
         font_pos = font_surface.get_rect(center=(self.w // 2, self.h // 2))
         self.surface.blit(font_surface, font_pos)
@@ -144,6 +145,7 @@ class Calculator(Window):
         self.op2.clear()
         self.operation.clear()
         self.answer.clear()
+        self.window.fill(self.window_color)
 
     def run(self):
         self.show_window()
@@ -158,10 +160,12 @@ class Calculator(Window):
                 match event.type:
                     case pygame.QUIT:
                         exit()
+
+                    # РЕАЛИЗОВАТЬ УДАЛЕНИЕ ЦИФР
                     case pygame.KEYDOWN:
                         if event.key in self.num_pad_digits.keys():
                             if clear:
-                                self.window.fill(self.window_color)
+                                self.clear_fields()
                                 clear = False
 
                             num1 += self.num_pad_digits[event.key]
@@ -183,6 +187,14 @@ class Calculator(Window):
                             print('.', end='')
                             op.write(num1)
                             self.say_digit_or_operation('point')
+
+                        elif event.key == pygame.K_BACKSPACE:
+                            if num1:
+                                num1 = num1[:-1]
+                                op.clear()
+                                op.write(num1)
+                                print()
+                                print(num1, end='')
 
                         elif event.key == pygame.K_KP_ENTER:
                             answer = self.calculate(num1, buf, operator[1])

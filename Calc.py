@@ -39,6 +39,7 @@ class OperandWindow(Window):
 
     def clear(self):
         self.surface.fill(self.window_color)
+        self
 
 
 class Calculator(Window):

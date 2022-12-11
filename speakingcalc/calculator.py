@@ -61,15 +61,15 @@ class Calculator(Window):
                     return 'error_zero_division'
 
     def write_digit(self, event):
-        if event.key in self.keys.digits.keys():
-            if self.__clear and self.__answer:
-                self.calc_window.clear_fields()
-                self.__clear = False
+        if self.__clear and self.__answer:  # Если установлен флаг очисти
+            # и получен результат вычисления предыдущего выражения
+            self.calc_window.clear_fields()  # Тогда очистить поля ввода-вывода
+            self.__clear = False  # Сбросить флаг очистки
 
-            self.__num1 += self.keys.digits[event.key]
-            print(self.keys.digits[event.key], end='')
-            self.__current_field.write(self.__num1)
-            self.speaker.say_digit_or_operation(self.keys.digits[event.key])
+        self.__num1 += self.keys.digits[event.key]  # Добавить символ к строке с числом
+        print(self.keys.digits[event.key], end='')  # Вывести в консоль
+        self.__current_field.write(self.__num1)  # Записать полученное значение в текущее поле
+        self.speaker.say_digit_or_operation(self.keys.digits[event.key])  # Вывести звуковое сопровождение
 
     def process_operator(self, event):
         # Если первый операнд не пустой

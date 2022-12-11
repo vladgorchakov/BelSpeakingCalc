@@ -149,6 +149,8 @@ class Calculator(Window):
                         elif event.key == pygame.K_KP_ENTER:
                             self.process_equal()
 
-                            ### ДОПИСАТЬ ОКРУГЛЕНИЕ И УДАЛЕНИЕ ЛИШНИХ НУЛЕЙ ЕСЛИ ТИП инт
+                        # выход по ESC
 
             self.calc_window.run()
+
+# ДОПИСАТЬ ОКРУГЛЕНИЕ И УДАЛЕНИЕ ЛИШНИХ НУЛЕЙ ЕСЛИ ТИП инт

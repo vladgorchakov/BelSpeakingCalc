@@ -8,7 +8,7 @@ from .speaker import Speaker
 
 
 class Calculator(Window):
-    def __init__(self, weight=1024, height=768, color=Colors.BLACK.value, caption='Calculator',):
+    def __init__(self, weight=1024, height=768, color=Colors.BLACK.value, caption='Calculator', ):
         self.calc_window = CalcWindow(weight=1024, height=768, color=Colors.BLACK.value, caption='Calculator')
         self.speaker = Speaker(f'./{path.dirname(path.relpath(__file__))}/sounds/')
         self.keys = CalcKeys()
@@ -17,6 +17,7 @@ class Calculator(Window):
         self.__answer = ''
         self.__current_field = self.calc_window.operand_field1
         self.__clear = False
+        self.__operator = None
 
     @staticmethod
     def is_int(value):
@@ -70,6 +71,36 @@ class Calculator(Window):
             self.__current_field.write(self.__num1)
             self.speaker.say_digit_or_operation(self.keys.digits[event.key])
 
+    def process_operator(self, event):
+        # Если первый операнд не пустой
+        if self.__num1:
+            self.__buf = self.__num1
+            self.__num1 = ''
+
+        # Если операция производиться с результатом вычисления прошлого выражения
+        elif not self.__num1 and self.__answer:
+            self.calc_window.clear_fields()  # Очистка полей ввода
+            self.calc_window.operand_field1.write(str(self.__answer))  # Запись результата прошлого выражения в
+            # поле ввода операнда 1
+            self.__buf = self.__answer  # Значение результата сохраняется в буфер
+            self.__answer = ''  # Очистка переменной хранения результата
+
+        self.__operator = self.keys.operators[event.key]  # получение списка с символом и названием оператора
+        # соответсвующего нажатой клавише
+        print(self.__operator[1], end='')
+        self.calc_window.operation_field.write(self.__operator[1])  # Запись символа оператора в поле
+        # вывода ввода оператора
+        self.speaker.say_digit_or_operation(self.__operator[0])  # Вывод звукового сопровождения
+        self.__current_field = self.calc_window.operand_field2  # Смена активного (текущего) поля
+        # на поле второго операнда
+
+    def process_point(self, event):
+        if self.__num1.count('.') < 1:
+            self.__num1 += '.'
+            print('.', end='')
+            self.__current_field.write(self.__num1)
+            self.speaker.say_digit_or_operation('point')
+
     def run(self):
         self.calc_window.show_window()
 
@@ -80,33 +111,17 @@ class Calculator(Window):
                         exit()
 
                     case pygame.KEYDOWN:
+                        # Если нажата клавиша с цифрами
                         if event.key in self.keys.digits.keys():
                             self.write_digit(event)
 
-
+                        # Если нажата клавиша с арифметическими оператора
                         elif event.key in self.keys.operators.keys():
-                            if self.__num1:
-                                self.__buf = self.__num1
-                                self.__num1 = ''
+                            self.process_operator(event)
 
-                            elif not self.__num1 and self.__answer:
-                                self.calc_window.clear_fields()
-                                self.calc_window.operand_field1.write(str(self.__answer))
-                                self.__buf = self.__answer
-                                self.__answer = ''
-
-                            operator = self.keys.operators[event.key]
-                            print(operator[1], end='')
-                            self.calc_window.operation_field.write(operator[1])
-                            self.speaker.say_digit_or_operation(operator[0])
-                            self.__current_field = self.calc_window.operand_field2
-
+                        # Если нажата клавиша с точкой
                         elif event.key in (pygame.K_PERIOD, pygame.K_KP_PERIOD):
-                            if self.__num1.count('.') < 1:
-                                self.__num1 += '.'
-                                print('.', end='')
-                                self.__current_field.write(self.__num1)
-                                self.speaker.say_digit_or_operation('point')
+                            self.process_point(event)
 
                         elif event.key == pygame.K_BACKSPACE:
                             if self.__num1:
@@ -115,7 +130,7 @@ class Calculator(Window):
 
                         elif event.key == pygame.K_KP_ENTER:
                             if self.__num1 and self.__buf:
-                                self.__answer = str(self.calculate(self.__num1, self.__buf, operator[1]))
+                                self.__answer = str(self.calculate(self.__num1, self.__buf, self.__operator[1]))
                                 print(f' = {self.__answer}')
                                 self.calc_window.answer_field.write(f'={self.__answer}')
                                 self.speaker.say_answer(self.__answer)

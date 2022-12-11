@@ -69,15 +69,15 @@ class Calculator(Window):
                         exit()
 
                     case pygame.KEYDOWN:
-                        if event.key in self.keys.num_pad_digits.keys():
+                        if event.key in self.keys.digits.keys():
                             if clear and answer:
                                 self.calc_window.clear_fields()
                                 clear = False
 
-                            num1 += self.keys.num_pad_digits[event.key]
-                            print(self.keys.num_pad_digits[event.key], end='')
+                            num1 += self.keys.digits[event.key]
+                            print(self.keys.digits[event.key], end='')
                             op.write(num1)
-                            self.speaker.say_digit_or_operation(self.keys.num_pad_digits[event.key])
+                            self.speaker.say_digit_or_operation(self.keys.digits[event.key])
 
                         elif event.key in self.keys.operators.keys():
                             if num1:

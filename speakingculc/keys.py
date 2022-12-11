@@ -10,7 +10,7 @@ class CalcKeys:
             pygame.K_KP_MULTIPLY: ('multiply', '*'),
         }
 
-        self.num_pad_digits = {
+        self.digits = {
             pygame.K_KP0: '0',
             pygame.K_KP1: '1',
             pygame.K_KP2: '2',

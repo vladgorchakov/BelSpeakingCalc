@@ -3,33 +3,15 @@ import pygame
 from .colors import Colors
 from .interface import Window, CalcWindow
 from os import path
+from .keys import CalcKeys
 from .speaker import Speaker
 
 
 class Calculator(Window):
     def __init__(self, weight=1024, height=768, color=Colors.BLACK.value, caption='Calculator',):
-
         self.calc_window = CalcWindow(weight=1024, height=768, color=Colors.BLACK.value, caption='Calculator')
         self.speaker = Speaker(f'./{path.dirname(path.relpath(__file__))}/sounds/')
-        self.operators = {
-            pygame.K_KP_PLUS: ('plus', '+'),
-            pygame.K_KP_MINUS: ('minus', '-'),
-            pygame.K_KP_DIVIDE: ('divide', '/'),
-            pygame.K_KP_MULTIPLY: ('multiply', '*'),
-        }
-
-        self.num_pad_digits = {
-            pygame.K_KP0: '0',
-            pygame.K_KP1: '1',
-            pygame.K_KP2: '2',
-            pygame.K_KP3: '3',
-            pygame.K_KP4: '4',
-            pygame.K_KP5: '5',
-            pygame.K_KP6: '6',
-            pygame.K_KP7: '7',
-            pygame.K_KP8: '8',
-            pygame.K_KP9: '9'
-        }
+        self.keys = CalcKeys()
 
     @staticmethod
     def is_int(value):
@@ -74,7 +56,6 @@ class Calculator(Window):
 
     def run(self):
         self.calc_window.show_window()
-
         num1 = ''
         buf = ''
         op = self.calc_window.op1
@@ -88,17 +69,17 @@ class Calculator(Window):
                         exit()
 
                     case pygame.KEYDOWN:
-                        if event.key in self.num_pad_digits.keys():
+                        if event.key in self.keys.num_pad_digits.keys():
                             if clear and answer:
                                 self.calc_window.clear_fields()
                                 clear = False
 
-                            num1 += self.num_pad_digits[event.key]
-                            print(self.num_pad_digits[event.key], end='')
+                            num1 += self.keys.num_pad_digits[event.key]
+                            print(self.keys.num_pad_digits[event.key], end='')
                             op.write(num1)
-                            self.speaker.say_digit_or_operation(self.num_pad_digits[event.key])
+                            self.speaker.say_digit_or_operation(self.keys.num_pad_digits[event.key])
 
-                        elif event.key in self.operators.keys():
+                        elif event.key in self.keys.operators.keys():
                             if num1:
                                 buf = num1
                                 num1 = ''
@@ -109,7 +90,7 @@ class Calculator(Window):
                                 buf = answer
                                 answer = ''
 
-                            operator = self.operators[event.key]
+                            operator = self.keys.operators[event.key]
                             print(operator[1], end='')
                             self.calc_window.operation.write(operator[1])
                             self.speaker.say_digit_or_operation(operator[0])

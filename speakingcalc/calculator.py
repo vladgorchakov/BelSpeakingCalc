@@ -60,16 +60,16 @@ class Calculator(Window):
                 except ZeroDivisionError:
                     return 'error_zero_division'
 
-    def write_digit(self, event):
+    def write_digit(self, digit):
         if self.__clear and self.__answer:  # Если установлен флаг очисти
             # и получен результат вычисления предыдущего выражения
             self.calc_window.clear_fields()  # Тогда очистить поля ввода-вывода
             self.__clear = False  # Сбросить флаг очистки
 
-        self.__num += self.keys.digits[event.key]  # Добавить символ к строке с числом
-        print(self.keys.digits[event.key], end='')  # Вывести в консоль
+        self.__num += digit  # Добавить символ к строке с числом
+        print(digit, end='')  # Вывести в консоль
         self.__current_field.write(self.__num)  # Записать полученное значение в текущее поле
-        self.speaker.say_digit_or_operation(self.keys.digits[event.key])  # Вывести звуковое сопровождение
+        self.speaker.say_digit_or_operation(digit)  # Вывести звуковое сопровождение
 
     def process_operator(self, event):
         # Если первый операнд не пустой
@@ -131,7 +131,8 @@ class Calculator(Window):
                     case pygame.KEYDOWN:
                         # Если нажата клавиша с цифрами
                         if event.key in self.keys.digits.keys():
-                            self.write_digit(event)
+                            self.write_digit(self.keys.digits[event.key])
+                            # self.write_digit(event)
 
                         # Если нажата клавиша с арифметическими оператора
                         elif event.key in self.keys.operators.keys():

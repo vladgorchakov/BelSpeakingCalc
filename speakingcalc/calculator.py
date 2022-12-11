@@ -94,12 +94,17 @@ class Calculator(Window):
         self.__current_field = self.calc_window.operand_field2  # Смена активного (текущего) поля
         # на поле второго операнда
 
-    def process_point(self, event):
-        if self.__num1.count('.') < 1:
-            self.__num1 += '.'
-            print('.', end='')
-            self.__current_field.write(self.__num1)
-            self.speaker.say_digit_or_operation('point')
+    def process_point(self):
+        if self.__num1.count('.') < 1:  # Если число содержит 0 точек
+            self.__num1 += '.'  # Добавить точку к числу
+            print('.', end='')  # Вывести точку в консоль
+            self.__current_field.write(self.__num1)  # Вывести полученную строку в текущее поле
+            self.speaker.say_digit_or_operation('point')  # Вывести звуковое сопровождение
+
+    def process_backspace(self):
+        if self.__num1:  # Если строка хранить что-то (не пустая)
+            self.__num1 = self.__num1[:-1]  # Уменьшение строки на один символ
+            self.__current_field.write(self.__num1)  # Вывод полученой строки в активное текущее поле
 
     def run(self):
         self.calc_window.show_window()
@@ -121,12 +126,11 @@ class Calculator(Window):
 
                         # Если нажата клавиша с точкой
                         elif event.key in (pygame.K_PERIOD, pygame.K_KP_PERIOD):
-                            self.process_point(event)
+                            self.process_point()
 
+                        # Если нажата клавиша BACKSPACE
                         elif event.key == pygame.K_BACKSPACE:
-                            if self.__num1:
-                                self.__num1 = self.__num1[:-1]
-                                self.__current_field.write(self.__num1)
+                            self.process_backspace()
 
                         elif event.key == pygame.K_KP_ENTER:
                             if self.__num1 and self.__buf:

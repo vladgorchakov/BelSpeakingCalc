@@ -58,7 +58,7 @@ class Calculator(Window):
         self.calc_window.show_window()
         num1 = ''
         buf = ''
-        op = self.calc_window.op1
+        op = self.calc_window.operand_field1
         clear = False
         answer = ''
 
@@ -86,15 +86,15 @@ class Calculator(Window):
 
                             elif not num1 and answer:
                                 self.calc_window.clear_fields()
-                                self.calc_window.op1.write(str(answer))
+                                self.calc_window.operand_field1.write(str(answer))
                                 buf = answer
                                 answer = ''
 
                             operator = self.keys.operators[event.key]
                             print(operator[1], end='')
-                            self.calc_window.operation.write(operator[1])
+                            self.calc_window.operation_field.write(operator[1])
                             self.speaker.say_digit_or_operation(operator[0])
-                            op = self.calc_window.op2
+                            op = self.calc_window.operand_field2
 
                         elif event.key in (pygame.K_PERIOD, pygame.K_KP_PERIOD):
                             if num1.count('.') < 1:
@@ -112,11 +112,11 @@ class Calculator(Window):
                             if num1 and buf:
                                 answer = str(self.calculate(num1, buf, operator[1]))
                                 print(f' = {answer}')
-                                self.calc_window.answer.write(f'={answer}')
+                                self.calc_window.answer_field.write(f'={answer}')
                                 self.speaker.say_answer(answer)
                                 num1 = ''
                                 buf = ''
-                                op = self.calc_window.op1
+                                op = self.calc_window.operand_field1
                                 clear = True
 
                             ### ДОПИСАТЬ ОКРУГЛЕНИЕ И УДАЛЕНИЕ ЛИШНИХ НУЛЕЙ ЕСЛИ ТИП инт

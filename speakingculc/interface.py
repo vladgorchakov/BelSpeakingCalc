@@ -36,10 +36,10 @@ class CalcWindow(Window):
         pygame.init()
         self.caption = caption
         self.window = pygame.display.set_mode((self.w, self.h))
-        self.op1 = OperandWindow(self.window, 1000, 150, Colors.BLACK.value, (0, 0))
-        self.op2 = OperandWindow(self.window, 1000, 150, Colors.BLACK.value, (0, 300))
-        self.operation = OperandWindow(self.window, 1000, 150, Colors.BLACK.value, (0, 150))
-        self.answer = OperandWindow(self.window, 1000, 150, Colors.BLACK.value, (0, 450))
+        self.operand_field1 = OperandWindow(self.window, 1000, 150, Colors.BLACK.value, (0, 0))
+        self.operand_field2 = OperandWindow(self.window, 1000, 150, Colors.BLACK.value, (0, 300))
+        self.operation_field = OperandWindow(self.window, 1000, 150, Colors.BLACK.value, (0, 150))
+        self.answer_field = OperandWindow(self.window, 1000, 150, Colors.BLACK.value, (0, 450))
         self.fps = 60
         self.clock = pygame.time.Clock()
 

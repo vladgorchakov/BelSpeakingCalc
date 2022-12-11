@@ -1,4 +1,4 @@
-from speakingculc.calculator import Calculator
+from speakingcalc.calculator import Calculator
 
 
 def main():

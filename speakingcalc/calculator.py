@@ -71,7 +71,7 @@ class Calculator(Window):
         self.__current_field.write(self.__num)  # Записать полученное значение в текущее поле
         self.speaker.say_digit_or_operation(digit)  # Вывести звуковое сопровождение
 
-    def process_operator(self, event):
+    def process_operator(self, operator):
         # Если первый операнд не пустой
         if self.__num:
             self.__buf = self.__num  # Сохранить число в буфер
@@ -85,7 +85,7 @@ class Calculator(Window):
             self.__buf = self.__answer  # Значение результата сохраняется в буфер
             self.__answer = ''  # Очистка переменной хранения результата
 
-        self.__operator = self.keys.operators[event.key]  # получение списка с символом и названием оператора
+        self.__operator = operator  # получение списка с символом и названием оператора
         # соответсвующего нажатой клавише
         print(self.__operator[1], end='')
         self.calc_window.operation_field.write(self.__operator[1])  # Запись символа оператора в поле
@@ -132,11 +132,10 @@ class Calculator(Window):
                         # Если нажата клавиша с цифрами
                         if event.key in self.keys.digits.keys():
                             self.write_digit(self.keys.digits[event.key])
-                            # self.write_digit(event)
 
                         # Если нажата клавиша с арифметическими оператора
                         elif event.key in self.keys.operators.keys():
-                            self.process_operator(event)
+                            self.process_operator(self.keys.operators[event.key])
 
                         # Если нажата клавиша с точкой
                         elif event.key in (pygame.K_PERIOD, pygame.K_KP_PERIOD):

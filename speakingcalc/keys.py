@@ -3,6 +3,7 @@ import pygame
 
 class CalcKeys:
     def __init__(self):
+
         self.operators = {
             pygame.K_KP_PLUS: ('plus', '+'),
             pygame.K_KP_MINUS: ('minus', '-'),

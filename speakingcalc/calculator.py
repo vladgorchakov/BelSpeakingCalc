@@ -12,6 +12,11 @@ class Calculator(Window):
         self.calc_window = CalcWindow(weight=1024, height=768, color=Colors.BLACK.value, caption='Calculator')
         self.speaker = Speaker(f'./{path.dirname(path.relpath(__file__))}/sounds/')
         self.keys = CalcKeys()
+        self.__num1 = ''
+        self.__buf = ''
+        self.__answer = ''
+        self.__current_field = self.calc_window.operand_field1
+        self.__clear = False
 
     @staticmethod
     def is_int(value):
@@ -54,13 +59,19 @@ class Calculator(Window):
                 except ZeroDivisionError:
                     return 'error_zero_division'
 
+    def write_digit(self, event):
+        if event.key in self.keys.digits.keys():
+            if self.__clear and self.__answer:
+                self.calc_window.clear_fields()
+                self.__clear = False
+
+            self.__num1 += self.keys.digits[event.key]
+            print(self.keys.digits[event.key], end='')
+            self.__current_field.write(self.__num1)
+            self.speaker.say_digit_or_operation(self.keys.digits[event.key])
+
     def run(self):
         self.calc_window.show_window()
-        num1 = ''
-        buf = ''
-        answer = ''
-        current_field = self.calc_window.operand_field1
-        clear = False
 
         while True:
             for event in pygame.event.get():
@@ -70,54 +81,48 @@ class Calculator(Window):
 
                     case pygame.KEYDOWN:
                         if event.key in self.keys.digits.keys():
-                            if clear and answer:
-                                self.calc_window.clear_fields()
-                                clear = False
+                            self.write_digit(event)
 
-                            num1 += self.keys.digits[event.key]
-                            print(self.keys.digits[event.key], end='')
-                            current_field.write(num1)
-                            self.speaker.say_digit_or_operation(self.keys.digits[event.key])
 
                         elif event.key in self.keys.operators.keys():
-                            if num1:
-                                buf = num1
-                                num1 = ''
+                            if self.__num1:
+                                self.__buf = self.__num1
+                                self.__num1 = ''
 
-                            elif not num1 and answer:
+                            elif not self.__num1 and self.__answer:
                                 self.calc_window.clear_fields()
-                                self.calc_window.operand_field1.write(str(answer))
-                                buf = answer
-                                answer = ''
+                                self.calc_window.operand_field1.write(str(self.__answer))
+                                self.__buf = self.__answer
+                                self.__answer = ''
 
                             operator = self.keys.operators[event.key]
                             print(operator[1], end='')
                             self.calc_window.operation_field.write(operator[1])
                             self.speaker.say_digit_or_operation(operator[0])
-                            current_field = self.calc_window.operand_field2
+                            self.__current_field = self.calc_window.operand_field2
 
                         elif event.key in (pygame.K_PERIOD, pygame.K_KP_PERIOD):
-                            if num1.count('.') < 1:
-                                num1 += '.'
+                            if self.__num1.count('.') < 1:
+                                self.__num1 += '.'
                                 print('.', end='')
-                                current_field.write(num1)
+                                self.__current_field.write(self.__num1)
                                 self.speaker.say_digit_or_operation('point')
 
                         elif event.key == pygame.K_BACKSPACE:
-                            if num1:
-                                num1 = num1[:-1]
-                                current_field.write(num1)
+                            if self.__num1:
+                                self.__num1 = self.__num1[:-1]
+                                self.__current_field.write(self.__num1)
 
                         elif event.key == pygame.K_KP_ENTER:
-                            if num1 and buf:
-                                answer = str(self.calculate(num1, buf, operator[1]))
-                                print(f' = {answer}')
-                                self.calc_window.answer_field.write(f'={answer}')
-                                self.speaker.say_answer(answer)
-                                num1 = ''
-                                buf = ''
-                                current_field = self.calc_window.operand_field1
-                                clear = True
+                            if self.__num1 and self.__buf:
+                                self.__answer = str(self.calculate(self.__num1, self.__buf, operator[1]))
+                                print(f' = {self.__answer}')
+                                self.calc_window.answer_field.write(f'={self.__answer}')
+                                self.speaker.say_answer(self.__answer)
+                                self.__num1 = ''
+                                self.__buf = ''
+                                self.__current_field = self.calc_window.operand_field1
+                                self.__clear = True
 
                             ### ДОПИСАТЬ ОКРУГЛЕНИЕ И УДАЛЕНИЕ ЛИШНИХ НУЛЕЙ ЕСЛИ ТИП инт
 

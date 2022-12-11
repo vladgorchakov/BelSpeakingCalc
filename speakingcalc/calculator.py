@@ -58,9 +58,9 @@ class Calculator(Window):
         self.calc_window.show_window()
         num1 = ''
         buf = ''
-        op = self.calc_window.operand_field1
-        clear = False
         answer = ''
+        current_field = self.calc_window.operand_field1
+        clear = False
 
         while True:
             for event in pygame.event.get():
@@ -76,7 +76,7 @@ class Calculator(Window):
 
                             num1 += self.keys.digits[event.key]
                             print(self.keys.digits[event.key], end='')
-                            op.write(num1)
+                            current_field.write(num1)
                             self.speaker.say_digit_or_operation(self.keys.digits[event.key])
 
                         elif event.key in self.keys.operators.keys():
@@ -94,19 +94,19 @@ class Calculator(Window):
                             print(operator[1], end='')
                             self.calc_window.operation_field.write(operator[1])
                             self.speaker.say_digit_or_operation(operator[0])
-                            op = self.calc_window.operand_field2
+                            current_field = self.calc_window.operand_field2
 
                         elif event.key in (pygame.K_PERIOD, pygame.K_KP_PERIOD):
                             if num1.count('.') < 1:
                                 num1 += '.'
                                 print('.', end='')
-                                op.write(num1)
+                                current_field.write(num1)
                                 self.speaker.say_digit_or_operation('point')
 
                         elif event.key == pygame.K_BACKSPACE:
                             if num1:
                                 num1 = num1[:-1]
-                                op.write(num1)
+                                current_field.write(num1)
 
                         elif event.key == pygame.K_KP_ENTER:
                             if num1 and buf:
@@ -116,7 +116,7 @@ class Calculator(Window):
                                 self.speaker.say_answer(answer)
                                 num1 = ''
                                 buf = ''
-                                op = self.calc_window.operand_field1
+                                current_field = self.calc_window.operand_field1
                                 clear = True
 
                             ### ДОПИСАТЬ ОКРУГЛЕНИЕ И УДАЛЕНИЕ ЛИШНИХ НУЛЕЙ ЕСЛИ ТИП инт

@@ -4,8 +4,8 @@ import pygame
 
 
 class Speaker:
-    def __init__(self):
-        self.sounds_directory = f'./{path.dirname(path.relpath(__file__))}/sounds/'
+    def __init__(self, sound_dir):
+        self.sounds_directory = sound_dir
 
     def create_path(self, file_name):
         if path.isfile(f'{self.sounds_directory}{file_name}.wav'):

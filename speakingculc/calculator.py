@@ -1,24 +1,16 @@
 from decimal import Decimal
 import pygame
-import time
 from .colors import Colors
-from .interface import Window, OperandWindow
-from os import path, getcwd
+from .interface import Window, CalcWindow
+from os import path
 from .speaker import Speaker
 
 
 class Calculator(Window):
     def __init__(self, weight=1024, height=768, color=Colors.BLACK.value, caption='Calculator',):
-        super().__init__(weight, height, color)
-        pygame.init()
-        self.caption = caption
-        self.window = pygame.display.set_mode((self.w, self.h))
-        self.op1 = OperandWindow(self.window, 1000, 150, Colors.BLACK.value, (0, 0))
-        self.op2 = OperandWindow(self.window, 1000, 150, Colors.BLACK.value, (0, 300))
-        self.operation = OperandWindow(self.window, 1000, 150, Colors.BLACK.value, (0, 150))
-        self.answer = OperandWindow(self.window, 1000, 150, Colors.BLACK.value, (0, 450))
-        self.fps = 60
-        self.clock = pygame.time.Clock()
+
+        self.calc_window = CalcWindow(weight=1024, height=768, color=Colors.BLACK.value, caption='Calculator')
+        self.speaker = Speaker(f'./{path.dirname(path.relpath(__file__))}/sounds/')
         self.operators = {
             pygame.K_KP_PLUS: ('plus', '+'),
             pygame.K_KP_MINUS: ('minus', '-'),
@@ -38,8 +30,6 @@ class Calculator(Window):
             pygame.K_KP8: '8',
             pygame.K_KP9: '9'
         }
-
-        self.speaker = Speaker()
 
     @staticmethod
     def is_int(value):
@@ -82,19 +72,12 @@ class Calculator(Window):
                 except ZeroDivisionError:
                     return 'error_zero_division'
 
-    def show_window(self):
-        self.window.fill(self.window_color)
-        pygame.display.update()
-
-    def clear_fields(self):
-        self.window.fill(self.window_color)
-
     def run(self):
-        self.show_window()
+        self.calc_window.show_window()
 
         num1 = ''
         buf = ''
-        op = self.op1
+        op = self.calc_window.op1
         clear = False
         answer = ''
 
@@ -107,7 +90,7 @@ class Calculator(Window):
                     case pygame.KEYDOWN:
                         if event.key in self.num_pad_digits.keys():
                             if clear and answer:
-                                self.clear_fields()
+                                self.calc_window.clear_fields()
                                 clear = False
 
                             num1 += self.num_pad_digits[event.key]
@@ -121,16 +104,16 @@ class Calculator(Window):
                                 num1 = ''
 
                             elif not num1 and answer:
-                                self.clear_fields()
-                                self.op1.write(str(answer))
+                                self.calc_window.clear_fields()
+                                self.calc_window.op1.write(str(answer))
                                 buf = answer
                                 answer = ''
 
                             operator = self.operators[event.key]
                             print(operator[1], end='')
-                            self.operation.write(operator[1])
+                            self.calc_window.operation.write(operator[1])
                             self.speaker.say_digit_or_operation(operator[0])
-                            op = self.op2
+                            op = self.calc_window.op2
 
                         elif event.key in (pygame.K_PERIOD, pygame.K_KP_PERIOD):
                             if num1.count('.') < 1:
@@ -148,13 +131,13 @@ class Calculator(Window):
                             if num1 and buf:
                                 answer = str(self.calculate(num1, buf, operator[1]))
                                 print(f' = {answer}')
-                                self.answer.write(f'={answer}')
+                                self.calc_window.answer.write(f'={answer}')
                                 self.speaker.say_answer(answer)
                                 num1 = ''
                                 buf = ''
-                                op = self.op1
+                                op = self.calc_window.op1
                                 clear = True
 
                             ### ДОПИСАТЬ ОКРУГЛЕНИЕ И УДАЛЕНИЕ ЛИШНИХ НУЛЕЙ ЕСЛИ ТИП инт
 
-            self.clock.tick(self.fps)
+            self.calc_window.run()

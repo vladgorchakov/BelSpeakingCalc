@@ -12,7 +12,7 @@ class Calculator(Window):
         self.calc_window = CalcWindow(weight=1024, height=768, color=Colors.BLACK.value, caption='Calculator')
         self.speaker = Speaker(f'./{path.dirname(path.relpath(__file__))}/sounds/')
         self.keys = CalcKeys()
-        self.__num1 = ''
+        self.__num = ''
         self.__buf = ''
         self.__answer = ''
         self.__current_field = self.calc_window.operand_field1
@@ -66,19 +66,19 @@ class Calculator(Window):
             self.calc_window.clear_fields()  # Тогда очистить поля ввода-вывода
             self.__clear = False  # Сбросить флаг очистки
 
-        self.__num1 += self.keys.digits[event.key]  # Добавить символ к строке с числом
+        self.__num += self.keys.digits[event.key]  # Добавить символ к строке с числом
         print(self.keys.digits[event.key], end='')  # Вывести в консоль
-        self.__current_field.write(self.__num1)  # Записать полученное значение в текущее поле
+        self.__current_field.write(self.__num)  # Записать полученное значение в текущее поле
         self.speaker.say_digit_or_operation(self.keys.digits[event.key])  # Вывести звуковое сопровождение
 
     def process_operator(self, event):
         # Если первый операнд не пустой
-        if self.__num1:
-            self.__buf = self.__num1
-            self.__num1 = ''
+        if self.__num:
+            self.__buf = self.__num  # Сохранить число в буфер
+            self.__num = ''  # Обнулить переменную
 
         # Если операция производиться с результатом вычисления прошлого выражения
-        elif not self.__num1 and self.__answer:
+        elif not self.__num and self.__answer:
             self.calc_window.clear_fields()  # Очистка полей ввода
             self.calc_window.operand_field1.write(str(self.__answer))  # Запись результата прошлого выражения в
             # поле ввода операнда 1
@@ -95,16 +95,29 @@ class Calculator(Window):
         # на поле второго операнда
 
     def process_point(self):
-        if self.__num1.count('.') < 1:  # Если число содержит 0 точек
-            self.__num1 += '.'  # Добавить точку к числу
+        if self.__num.count('.') < 1:  # Если число содержит 0 точек
+            self.__num += '.'  # Добавить точку к числу
             print('.', end='')  # Вывести точку в консоль
-            self.__current_field.write(self.__num1)  # Вывести полученную строку в текущее поле
+            self.__current_field.write(self.__num)  # Вывести полученную строку в текущее поле
             self.speaker.say_digit_or_operation('point')  # Вывести звуковое сопровождение
 
     def process_backspace(self):
-        if self.__num1:  # Если строка хранить что-то (не пустая)
-            self.__num1 = self.__num1[:-1]  # Уменьшение строки на один символ
-            self.__current_field.write(self.__num1)  # Вывод полученой строки в активное текущее поле
+        if self.__num:  # Если строка хранить что-то (не пустая)
+            self.__num = self.__num[:-1]  # Уменьшение строки на один символ
+            self.__current_field.write(self.__num)  # Вывод полученой строки в активное текущее поле
+
+    def process_equal(self):
+        if self.__num and self.__buf: # Если введены два числа (оператор?)
+            self.__answer = str(self.calculate(self.__num, self.__buf, self.__operator[1]))  # Вызвать функцию выч.
+            # значение выражения
+            print(f' = {self.__answer}')  # Вывести результат в консоль
+            self.calc_window.answer_field.write(f'={self.__answer}')  # Вывести результат в поле ответа
+            self.speaker.say_answer(self.__answer)  # Вывести звуковое сопровождение
+            self.__num = ''  # Обнулить переменную со вторым числом
+            self.__buf = ''  # Обнулить переменную с буфером (первое число)
+            self.__current_field = self.calc_window.operand_field1  # Установить, что последющим активное (текущее)
+            # поле будет поле для операнда 1
+            self.__clear = True  # Установить флаг очистки
 
     def run(self):
         self.calc_window.show_window()
@@ -132,16 +145,9 @@ class Calculator(Window):
                         elif event.key == pygame.K_BACKSPACE:
                             self.process_backspace()
 
+                        # Если нажата клавиша ENTER
                         elif event.key == pygame.K_KP_ENTER:
-                            if self.__num1 and self.__buf:
-                                self.__answer = str(self.calculate(self.__num1, self.__buf, self.__operator[1]))
-                                print(f' = {self.__answer}')
-                                self.calc_window.answer_field.write(f'={self.__answer}')
-                                self.speaker.say_answer(self.__answer)
-                                self.__num1 = ''
-                                self.__buf = ''
-                                self.__current_field = self.calc_window.operand_field1
-                                self.__clear = True
+                            self.process_equal()
 
                             ### ДОПИСАТЬ ОКРУГЛЕНИЕ И УДАЛЕНИЕ ЛИШНИХ НУЛЕЙ ЕСЛИ ТИП инт
 

@@ -1,5 +1,5 @@
 import pygame
-from .colors import Colors
+from speakingcalc.colors import Colors
 
 
 class Window:

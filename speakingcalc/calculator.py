@@ -123,7 +123,7 @@ class Calculator(Window):
         if event.key in self.keys.digits.keys():
             self.write_digit(self.keys.digits[event.key])
 
-        # Если нажата клавиша с арифметическими оператора
+        # Если нажата клавиша с арифметическими оператором
         elif event.key in self.keys.operators.keys():
             self.process_operator(self.keys.operators[event.key])
 
@@ -145,6 +145,7 @@ class Calculator(Window):
 
     def run(self):
         self.calc_window.show_window()
+        self.calc_window.run()
 
         while True:
             for event in pygame.event.get():
@@ -155,6 +156,5 @@ class Calculator(Window):
                     case pygame.KEYDOWN:
                         self.process_key_down(event)
 
-            self.calc_window.run()
 
 # ДОПИСАТЬ ОКРУГЛЕНИЕ И УДАЛЕНИЕ ЛИШНИХ НУЛЕЙ ЕСЛИ ТИП инт

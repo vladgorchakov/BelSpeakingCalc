@@ -31,6 +31,7 @@ class KeysScaner:
         self.keys = CalcKeys()
 
     def process_key_down(self, event):
+        # Если нажата клавиша с цифрой
         if event.key in self.keys.digits.keys():
             self.calc.write_digit(self.keys.digits[event.key])
 

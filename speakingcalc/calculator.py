@@ -1,10 +1,10 @@
 from decimal import Decimal
 # import pygame
 from .colors import Colors
-from .interface import Window, CalcWindow
+from .gui import Window, CalcWindow
 from os import path
 from .keys import KeysScaner
-from .speaker import Speaker
+from .sui import Speaker
 
 
 class Calculator(Window):

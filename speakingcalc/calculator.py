@@ -1,5 +1,5 @@
 from decimal import Decimal
-import pygame
+# import pygame
 from .colors import Colors
 from .interface import Window, CalcWindow
 from os import path

@@ -65,6 +65,7 @@ class Calculator(Window):
             # и получен результат вычисления предыдущего выражения
             self.calc_window.clear_fields()  # Тогда очистить поля ввода-вывода
             self.__clear = False  # Сбросить флаг очистки
+            self.__answer = ''
 
         self.__num += digit  # Добавить символ к строке с числом
         print(digit, end='')  # Вывести в консоль

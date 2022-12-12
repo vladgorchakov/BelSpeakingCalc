@@ -119,6 +119,30 @@ class Calculator(Window):
             # поле будет поле для операнда 1
             self.__clear = True  # Установить флаг очистки
 
+    def process_key_down(self, event):
+        if event.key in self.keys.digits.keys():
+            self.write_digit(self.keys.digits[event.key])
+
+        # Если нажата клавиша с арифметическими оператора
+        elif event.key in self.keys.operators.keys():
+            self.process_operator(self.keys.operators[event.key])
+
+        # Если нажата клавиша с точкой
+        elif event.key in (pygame.K_PERIOD, pygame.K_KP_PERIOD):
+            self.process_point()
+
+        # Если нажата клавиша BACKSPACE
+        elif event.key == pygame.K_BACKSPACE:
+            self.process_backspace()
+
+        # Если нажата клавиша ENTER
+        elif event.key == pygame.K_KP_ENTER:
+            self.process_equal()
+
+        # выход по ESC
+        elif event.key in (pygame.K_ESCAPE, pygame.K_q):
+            exit()
+
     def run(self):
         self.calc_window.show_window()
 
@@ -129,27 +153,7 @@ class Calculator(Window):
                         exit()
 
                     case pygame.KEYDOWN:
-                        # Если нажата клавиша с цифрами
-                        if event.key in self.keys.digits.keys():
-                            self.write_digit(self.keys.digits[event.key])
-
-                        # Если нажата клавиша с арифметическими оператора
-                        elif event.key in self.keys.operators.keys():
-                            self.process_operator(self.keys.operators[event.key])
-
-                        # Если нажата клавиша с точкой
-                        elif event.key in (pygame.K_PERIOD, pygame.K_KP_PERIOD):
-                            self.process_point()
-
-                        # Если нажата клавиша BACKSPACE
-                        elif event.key == pygame.K_BACKSPACE:
-                            self.process_backspace()
-
-                        # Если нажата клавиша ENTER
-                        elif event.key == pygame.K_KP_ENTER:
-                            self.process_equal()
-
-                        # выход по ESC
+                        self.process_key_down(event)
 
             self.calc_window.run()
 

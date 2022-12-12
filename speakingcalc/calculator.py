@@ -7,6 +7,46 @@ from .keys import CalcKeys
 from .speaker import Speaker
 
 
+class KeysScaner:
+    def __init__(self, calc):
+        self.calc = calc
+        self.keys = CalcKeys()
+
+    def process_key_down(self, event):
+        if event.key in self.keys.digits.keys():
+            self.calc.write_digit(self.keys.digits[event.key])
+
+        # Если нажата клавиша с арифметическими оператором
+        elif event.key in self.keys.operators.keys():
+            self.calc.process_operator(self.keys.operators[event.key])
+
+        # Если нажата клавиша с точкой
+        elif event.key in (pygame.K_PERIOD, pygame.K_KP_PERIOD):
+            self.calc.process_point()
+
+        # Если нажата клавиша BACKSPACE
+        elif event.key == pygame.K_BACKSPACE:
+            self.calc.process_backspace()
+
+        # Если нажата клавиша ENTER
+        elif event.key == pygame.K_KP_ENTER:
+            self.calc.process_equal()
+
+        # выход по ESC
+        elif event.key in (pygame.K_ESCAPE, pygame.K_q):
+            exit()
+
+    def scan(self):
+        while True:
+            for event in pygame.event.get():
+                match event.type:
+                    case pygame.QUIT:
+                        exit()
+
+                    case pygame.KEYDOWN:
+                        self.process_key_down(event)
+
+
 class Calculator(Window):
     def __init__(self, weight=1024, height=768, color=Colors.BLACK.value, caption='Calculator', ):
         self.calc_window = CalcWindow(weight=1024, height=768, color=Colors.BLACK.value, caption='Calculator')
@@ -18,6 +58,7 @@ class Calculator(Window):
         self.__current_field = self.calc_window.operand_field1
         self.__clear = False
         self.__operator = None
+        self.key_scaner = KeysScaner(self)
 
     @staticmethod
     def is_int(value):
@@ -119,42 +160,10 @@ class Calculator(Window):
             # поле будет поле для операнда 1
             self.__clear = True  # Установить флаг очистки
 
-    def process_key_down(self, event):
-        if event.key in self.keys.digits.keys():
-            self.write_digit(self.keys.digits[event.key])
-
-        # Если нажата клавиша с арифметическими оператором
-        elif event.key in self.keys.operators.keys():
-            self.process_operator(self.keys.operators[event.key])
-
-        # Если нажата клавиша с точкой
-        elif event.key in (pygame.K_PERIOD, pygame.K_KP_PERIOD):
-            self.process_point()
-
-        # Если нажата клавиша BACKSPACE
-        elif event.key == pygame.K_BACKSPACE:
-            self.process_backspace()
-
-        # Если нажата клавиша ENTER
-        elif event.key == pygame.K_KP_ENTER:
-            self.process_equal()
-
-        # выход по ESC
-        elif event.key in (pygame.K_ESCAPE, pygame.K_q):
-            exit()
-
     def run(self):
         self.calc_window.show_window()
         self.calc_window.run()
-
-        while True:
-            for event in pygame.event.get():
-                match event.type:
-                    case pygame.QUIT:
-                        exit()
-
-                    case pygame.KEYDOWN:
-                        self.process_key_down(event)
+        self.key_scaner.scan()
 
 
 # ДОПИСАТЬ ОКРУГЛЕНИЕ И УДАЛЕНИЕ ЛИШНИХ НУЛЕЙ ЕСЛИ ТИП инт
